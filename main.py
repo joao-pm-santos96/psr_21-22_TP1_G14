@@ -20,7 +20,7 @@ Input = namedtuple('Input', ['requested', 'received', 'duration'])
 """
 Functions definition
 """
-def checkEndgame(args, start_date, num_types):
+def check_game_end(args, start_date, num_types):
     """Check if game should end
 
     Args:
@@ -35,7 +35,7 @@ def checkEndgame(args, start_date, num_types):
     if args.use_time_mode:
         return time.time()-start_date>args.max_value 
     else:
-        return num_types>args.max_value
+        return num_types==args.max_value
 
 def welcome(args):
     """Print welcome message.
@@ -59,7 +59,7 @@ def main():
     # Parse arguments
     args = parser.parse_args()
 
-    # Generate lowerca ascii possibilities
+    # Generate lowercase ascii possibilities
     lowercase = string.ascii_lowercase
 
     # Initialize statistics
@@ -86,24 +86,24 @@ def main():
     start_date = time.time()
 
     # Loop
-    while not checkEndgame(args, start_date, types):
-        next = random.choice(lowercase)
-        print('Type letter ' + Fore.BLUE + next + Style.RESET_ALL)
+    while not check_game_end(args, start_date, types):
+        prompted = random.choice(lowercase)
+        print('Type letter ' + Fore.BLUE + prompted + Style.RESET_ALL)
 
         start_timer = time.time()
-        char = readchar.readkey()
+        typed = readchar.readkey()
         type_duration = time.time()-start_timer
 
-        if char==' ':
+        if typed==' ':
             break
 
-        color = Fore.GREEN if next == char else Fore.RED 
-        print('You typed letter ' + color + char + Style.RESET_ALL) 
+        color = Fore.GREEN if prompted == typed else Fore.RED 
+        print('You typed letter ' + color + typed + Style.RESET_ALL) 
     
-        statistics['inputs'].append(Input(requested=next, received=char, duration=type_duration))
+        statistics['inputs'].append(Input(requested=prompted, received=typed, duration=type_duration))
 
         types += 1
-        if next==char:
+        if prompted==typed:
             hits += 1
             hit_durations.append(type_duration)
         else:
@@ -125,6 +125,14 @@ def main():
     
     statistics['number_of_hits'] = hits
     statistics['number_of_types'] = types
+
+    # Print end messages
+    if args.use_time_mode and statistics['test_duration']>args.max_value:
+        print(f"Current test duration ({statistics['test_duration']}) exceeds maximum of {args.max_value}")
+    elif types==args.max_value:
+        print(f"Current number of inputs ({statistics['number_of_types']}) reaches maximum of {args.max_value}")
+    
+    print(Fore.BLUE + 'Test finished!' + Style.RESET_ALL) 
 
     # Print statistics
     pprint(statistics)
