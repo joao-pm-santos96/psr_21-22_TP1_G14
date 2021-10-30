@@ -22,7 +22,7 @@ Functions definition
 """
 def checkEndgame(args, start_date, num_types):
     """Check if game should end
-counetrs
+
     Args:
         args (argparse.Namespace): Input arguments.
         start_date (float): Start time.
