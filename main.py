@@ -42,9 +42,15 @@ def welcome(args):
 
     Args:
         args (argparse.Namespace): Input arguments.
-    """    
+    """
 
-    print(args.__dict__)
+    # Inverts the display of arguments to be the same as in the example
+    argr = args.__dict__.copy()
+    argr1 = argr.popitem()
+    argr2 = argr.popitem()
+    argr = dict([argr1, argr2])
+    print(argr)
+
     print(Fore.RED + 'PSR' + Style.RESET_ALL + " Typing test, group 14, October 2021")
     print(f"Test running up to {args.max_value} {'seconds' if args.use_time_mode else 'inputs'}.")
 
@@ -53,8 +59,12 @@ def main():
 
     # Define argparse inputs
     parser = argparse.ArgumentParser(description='Definition of test mode')
-    parser.add_argument('-utm','--use_time_mode', action='store_true', help='Max number of secs for time mode or maximum number of inputs for number of inputs mode.', required=False)
-    parser.add_argument('-mv','--max_value', type=int, help='Max number of seconds for time mode or maximum number of inputs for number of inputs mode.', required=True)
+    parser.add_argument('-utm', '--use_time_mode', action='store_true',
+                        help='If used, enabled ' + Fore.RED + 'time mode' + Style.RESET_ALL + ', if not used, enables ' + Fore.RED + 'inputs mode' + Style.RESET_ALL + '.',
+                        required=False)
+    parser.add_argument('-mv', '--max_value', type=int,
+                        help='Max number of seconds ' + Fore.RED + 'time mode ' + Style.RESET_ALL + 'or maximum number of inputs for ' + Fore.RED + 'number of inputs mode' + Style.RESET_ALL + '.',
+                        required=True)
 
     # Parse arguments
     args = parser.parse_args()
@@ -65,8 +75,8 @@ def main():
     # Initialize statistics
     statistics = {
         'inputs': [],
-        'type_hit_average_duration': 0.0,
-        'type_miss_average_duration': 0.0,
+        'type_hit_average_duration': 'It was not possible to measure',
+        'type_miss_average_duration': 'It was not possible to measure',
         'accuracy': 0.0
     }
 
