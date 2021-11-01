@@ -76,8 +76,8 @@ def main():
     # Initialize statistics
     statistics = {
         'inputs': [],
-        'type_hit_average_duration': 'It was not possible to measure',
-        'type_miss_average_duration': 'It was not possible to measure',
+        'type_hit_average_duration': 0.0,
+        'type_miss_average_duration': 0.0,
         'accuracy': 0.0
     }
 
