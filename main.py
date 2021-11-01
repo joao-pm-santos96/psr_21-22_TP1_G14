@@ -11,7 +11,6 @@ from datetime import datetime
 from collections import namedtuple
 from pprint import pprint
 from colorama import Fore, Style
-import sys
 
 """
 NamedTuple definition
@@ -45,16 +44,11 @@ def welcome(args):
         args (argparse.Namespace): Input arguments.
     """
 
-    # Inverts the display of arguments to be the same as in the example
-    argr = args.__dict__.copy()
-    argr1 = argr.popitem()
-    argr2 = argr.popitem()
-    argr = dict([argr1, argr2])
-    print(argr)
+    pprint(vars(args))
 
-    if args.__dict__['max_value']<=0:
-        print("The Maximum Value must be positive value")
-        sys.exit()
+    if args.max_value <= 0:
+        print("Maximum Value must be positive.")
+        exit(1)
 
     print(Fore.RED + 'PSR' + Style.RESET_ALL + " Typing test, group 14, October 2021")
     print(f"Test running up to {args.max_value} {'seconds' if args.use_time_mode else 'inputs'}.")
