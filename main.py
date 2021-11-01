@@ -64,12 +64,8 @@ def main():
 
     # Define argparse inputs
     parser = argparse.ArgumentParser(description='Definition of test mode')
-    parser.add_argument('-utm', '--use_time_mode', action='store_true',
-                        help='If used, enabled ' + Fore.RED + 'time mode' + Style.RESET_ALL + ', if not used, enables ' + Fore.RED + 'inputs mode' + Style.RESET_ALL + '.',
-                        required=False)
-    parser.add_argument('-mv', '--max_value', type=int,
-                        help='Max number of seconds ' + Fore.RED + 'time mode ' + Style.RESET_ALL + 'or maximum number of inputs for ' + Fore.RED + 'number of inputs mode' + Style.RESET_ALL + '.',
-                        required=True)
+    parser.add_argument('-utm','--use_time_mode', action='store_true', help='Max number of secs for time mode or maximum number of inputs for number of inputs mode.', required=False)
+    parser.add_argument('-mv','--max_value', type=int, help='Max number of seconds for time mode or maximum number of inputs for number of inputs mode.', required=True)
 
     # Parse arguments
     args = parser.parse_args()
