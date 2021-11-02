@@ -20,7 +20,7 @@ Input = namedtuple('Input', ['requested', 'received', 'duration'])
 """
 Functions definition
 """
-def check_game_end(args, start_date, num_types):
+def checkGameEnd(args, start_date, num_types):
     """Check if game should end
 
     Args:
@@ -53,6 +53,25 @@ def welcome(args):
     print(Fore.RED + 'PSR' + Style.RESET_ALL + " Typing test, group 14, October 2021")
     print(f"Test running up to {args.max_value} {'seconds' if args.use_time_mode else 'inputs'}.")
 
+def computeStatistics(statistics, types, hits, hit_durations, miss_durations, start_date):
+    
+    statistics['test_end'] =  datetime.now().ctime()
+    statistics['test_duration'] = time.time()-start_date
+
+    if types:
+        statistics['type_average_duration'] = (sum(hit_durations)+sum(miss_durations))/types
+        statistics['accuracy'] = hits/types
+    
+    if hit_durations:
+        statistics['type_hit_average_duration'] = sum(hit_durations)/len(hit_durations)
+
+    if miss_durations:
+        statistics['type_miss_average_duration'] = sum(miss_durations)/len(miss_durations)
+    
+    statistics['number_of_hits'] = hits
+    statistics['number_of_types'] = types
+
+    return statistics
 
 def main():
 
@@ -91,7 +110,8 @@ def main():
     start_date = time.time()
 
     # Loop
-    while not check_game_end(args, start_date, types):
+    print_statistics = True
+    while not checkGameEnd(args, start_date, types):
         prompted = random.choice(lowercase)
         print('Type letter ' + Fore.BLUE + prompted + Style.RESET_ALL)
 
@@ -100,6 +120,7 @@ def main():
         type_duration = time.time()-start_timer
 
         if typed==' ':
+            print_statistics = False
             break
 
         color = Fore.GREEN if prompted == typed else Fore.RED 
@@ -115,32 +136,21 @@ def main():
             miss_durations.append(type_duration)
 
     # Update end statistics
-    statistics['test_end'] =  datetime.now().ctime()
-    statistics['test_duration'] = time.time()-start_date
+    if print_statistics:
+        statistics = computeStatistics(statistics, types, hits, hit_durations, miss_durations, start_date)   
 
-    if types:
-        statistics['type_average_duration'] = (sum(hit_durations)+sum(miss_durations))/types
-        statistics['accuracy'] = hits/types
-    
-    if hit_durations:
-        statistics['type_hit_average_duration'] = sum(hit_durations)/len(hit_durations)
+        # Print end messages
+        if args.use_time_mode and statistics['test_duration']>args.max_value:
+            print(f"Current test duration ({statistics['test_duration']}) exceeds maximum of {args.max_value}")
+        elif types==args.max_value:
+            print(f"Current number of inputs ({statistics['number_of_types']}) reached maximum of {args.max_value}")
+        
+        print(Fore.BLUE + 'Test finished!' + Style.RESET_ALL) 
 
-    if miss_durations:
-        statistics['type_miss_average_duration'] = sum(miss_durations)/len(miss_durations)
-    
-    statistics['number_of_hits'] = hits
-    statistics['number_of_types'] = types
-
-    # Print end messages
-    if args.use_time_mode and statistics['test_duration']>args.max_value:
-        print(f"Current test duration ({statistics['test_duration']}) exceeds maximum of {args.max_value}")
-    elif types==args.max_value:
-        print(f"Current number of inputs ({statistics['number_of_types']}) reaches maximum of {args.max_value}")
-    
-    print(Fore.BLUE + 'Test finished!' + Style.RESET_ALL) 
-
-    # Print statistics
-    pprint(statistics)
+        # Print statistics
+        pprint(statistics)
+    else:
+        print(Fore.RED + 'Test aborted!' + Style.RESET_ALL)
 
 # Main
 if __name__ == '__main__':
