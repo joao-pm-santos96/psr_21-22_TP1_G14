@@ -103,7 +103,9 @@ def main():
     
     # Wait key press for game start
     print("Press any key to start the test")
-    readchar.readkey()
+    if str(readchar.readkey()) == ' ':
+        print(Fore.RED + 'Test aborted!' + Style.RESET_ALL)
+        exit(0)
 
     # Update starting time
     statistics['test_start'] = datetime.now().ctime()
