@@ -11,11 +11,34 @@ from datetime import datetime
 from collections import namedtuple
 from pprint import pprint
 from colorama import Fore, Style
+import signal
+from contextlib import contextmanager
+
 
 """
 NamedTuple definition
 """
 Input = namedtuple('Input', ['requested', 'received', 'duration'])
+
+
+""" 
+Timeout utility
+"""
+def raise_timeout(signum, frame):
+    raise TimeoutError
+
+@contextmanager
+def timeout(args):
+    if args.use_time_mode: # activate timer
+        signal.signal(signal.SIGALRM, raise_timeout)
+        signal.alarm(args.max_value)
+    try:
+        yield
+    except TimeoutError:
+        pass
+    finally: # cancel signiling 
+        signal.signal(signal.SIGALRM, signal.SIG_IGN)
+
 
 """
 Functions definition
@@ -32,7 +55,7 @@ def checkGameEnd(args, start_date, num_types):
         bool: True if should end, False otherwise
     """    
 
-    if args.use_time_mode:
+    if args.use_time_mode: # not required, just aditional checking
         return time.time()-start_date>args.max_value 
     else:
         return num_types==args.max_value
@@ -72,6 +95,7 @@ def computeStatistics(statistics, types, hits, hit_durations, miss_durations, st
     statistics['number_of_types'] = types
 
     return statistics
+
 
 def main():
 
@@ -113,29 +137,31 @@ def main():
 
     # Loop
     print_statistics = True
-    while not checkGameEnd(args, start_date, types):
-        prompted = random.choice(lowercase)
-        print('Type letter ' + Fore.BLUE + prompted + Style.RESET_ALL)
+    with timeout(args):
 
-        start_timer = time.time()
-        typed = readchar.readkey()
-        type_duration = time.time()-start_timer
+        while not checkGameEnd(args, start_date, types):
+            prompted = random.choice(lowercase)
+            print('Type letter ' + Fore.BLUE + prompted + Style.RESET_ALL)
 
-        if typed==' ':
-            print_statistics = False
-            break
+            start_timer = time.time()
+            typed = readchar.readkey()
+            type_duration = time.time()-start_timer
 
-        color = Fore.GREEN if prompted == typed else Fore.RED 
-        print('You typed letter ' + color + typed + Style.RESET_ALL) 
-    
-        statistics['inputs'].append(Input(requested=prompted, received=typed, duration=type_duration))
+            if typed==' ':
+                print_statistics = False
+                break
 
-        types += 1
-        if prompted==typed:
-            hits += 1
-            hit_durations.append(type_duration)
-        else:
-            miss_durations.append(type_duration)
+            color = Fore.GREEN if prompted == typed else Fore.RED 
+            print('You typed letter ' + color + typed + Style.RESET_ALL) 
+        
+            statistics['inputs'].append(Input(requested=prompted, received=typed, duration=type_duration))
+
+            types += 1
+            if prompted==typed:
+                hits += 1
+                hit_durations.append(type_duration)
+            else:
+                miss_durations.append(type_duration)
 
     # Update end statistics
     if print_statistics:
