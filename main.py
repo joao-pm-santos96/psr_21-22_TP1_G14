@@ -12,50 +12,27 @@ from collections import namedtuple
 from pprint import pprint
 from colorama import Fore, Style
 import signal
-from contextlib import contextmanager
 
 
-"""
-NamedTuple definition
-"""
+# namedtuple definition
 Input = namedtuple('Input', ['requested', 'received', 'duration'])
 
 
-""" 
-Timeout utility
-"""
 def raise_timeout(signum, frame):
     raise TimeoutError
 
-@contextmanager
-def timeout(args):
-    if args.use_time_mode: # activate timer
-        signal.signal(signal.SIGALRM, raise_timeout)
-        signal.alarm(args.max_value)
-    try:
-        yield
-    except TimeoutError:
-        pass
-
-"""
-Functions definition
-"""
-def checkGameEnd(args, start_date, num_types):
-    """ Check if game should end
-
+# functions definition
+def checkGameEnd(args, num_types):
+    """ 
     Args:
         args (argparse.Namespace): Input arguments.
-        start_date (float): Start time.
         num_types (int): Number of user types.
 
     Returns:
         bool: True if should end, False otherwise
     """    
-
-    if args.use_time_mode: # not required, just aditional checking
-        return time.time()-start_date>args.max_value 
-    else:
-        return num_types==args.max_value
+    return not args.use_time_mode and num_types==args.max_value
+        
 
 def welcome(args):
     """ Print welcome messages.
@@ -136,9 +113,12 @@ def main():
     start_date = time.time()
 
     # conditinal timeout
-    with timeout(args):
+    if args.use_time_mode: # activate timer
+        signal.signal(signal.SIGALRM, raise_timeout)
+        signal.alarm(args.max_value)
 
-        while not checkGameEnd(args, start_date, types):
+    try:
+        while not checkGameEnd(args, types):
             prompted = random.choice(lowercase)
             print('Type letter ' + Fore.BLUE + prompted + Style.RESET_ALL)
 
@@ -162,15 +142,19 @@ def main():
             else:
                 miss_durations.append(type_duration)
 
+    except TimeoutError:
+        pass
+
+
     # Update end statistics
     if print_statistics:
         statistics = computeStatistics(statistics, types, hits, hit_durations, miss_durations, start_date)   
 
         # Print end messages
-        if args.use_time_mode and statistics['test_duration']>args.max_value:
+        if args.use_time_mode and types==args.max_value:
             print(f"Current test duration ({statistics['test_duration']}) exceeded maximum of {args.max_value}")
-        elif types==args.max_value:
-            print(f"Current number of inputs ({statistics['number_of_types']}) reached maximum of {args.max_value}")
+        else:
+            print(f"Current number of inputs ({statistics['number_of_types']}) reached")
         
         print(Fore.BLUE + 'Test finished!' + Style.RESET_ALL) 
 
