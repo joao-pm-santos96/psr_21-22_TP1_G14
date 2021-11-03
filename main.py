@@ -128,12 +128,12 @@ def main():
         print(Fore.RED + 'Test aborted!' + Style.RESET_ALL)
         exit(0)
 
+    # Loop
+    print_statistics = True
+
     # Update starting time
     statistics['test_start'] = datetime.now().ctime()
     start_date = time.time()
-
-    # Loop
-    print_statistics = True
 
     # conditinal timeout
     with timeout(args):
