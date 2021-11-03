@@ -36,9 +36,6 @@ def timeout(args):
         yield
     except TimeoutError:
         pass
-    finally: # cancel signiling 
-        signal.signal(signal.SIGALRM, signal.SIG_IGN)
-
 
 """
 Functions definition
