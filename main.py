@@ -41,7 +41,7 @@ def timeout(args):
 Functions definition
 """
 def checkGameEnd(args, start_date, num_types):
-    """Check if game should end
+    """ Check if game should end
 
     Args:
         args (argparse.Namespace): Input arguments.
@@ -58,7 +58,7 @@ def checkGameEnd(args, start_date, num_types):
         return num_types==args.max_value
 
 def welcome(args):
-    """Print welcome message.
+    """ Print welcome messages.
 
     Args:
         args (argparse.Namespace): Input arguments.
@@ -134,6 +134,8 @@ def main():
 
     # Loop
     print_statistics = True
+
+    # conditinal timeout
     with timeout(args):
 
         while not checkGameEnd(args, start_date, types):
