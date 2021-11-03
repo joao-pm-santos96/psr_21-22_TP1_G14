@@ -151,7 +151,7 @@ def main():
         statistics = computeStatistics(statistics, types, hits, hit_durations, miss_durations, start_date)   
 
         # Print end messages
-        if args.use_time_mode and types==args.max_value:
+        if args.use_time_mode:
             print(f"Current test duration ({statistics['test_duration']}) exceeded maximum of {args.max_value}")
         else:
             print(f"Current number of inputs ({statistics['number_of_types']}) reached")
