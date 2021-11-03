@@ -168,7 +168,7 @@ def main():
 
         # Print end messages
         if args.use_time_mode and statistics['test_duration']>args.max_value:
-            print(f"Current test duration ({statistics['test_duration']}) exceeds maximum of {args.max_value}")
+            print(f"Current test duration ({statistics['test_duration']}) exceeded maximum of {args.max_value}")
         elif types==args.max_value:
             print(f"Current number of inputs ({statistics['number_of_types']}) reached maximum of {args.max_value}")
         
