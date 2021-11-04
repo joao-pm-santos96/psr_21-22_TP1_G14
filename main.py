@@ -83,6 +83,7 @@ def main():
 
     # Generate lowercase ascii possibilities
     lowercase = string.ascii_lowercase
+    print(string.ascii_lowercase)
 
     # Initialize statistics
     statistics = {
@@ -151,8 +152,8 @@ def main():
         statistics = computeStatistics(statistics, types, hits, hit_durations, miss_durations, start_date)   
 
         # Print end messages
-        if args.use_time_mode and types==args.max_value:
-            print(f"Current test duration ({statistics['test_duration']}) exceeded maximum of {args.max_value}")
+        if args.use_time_mode and statistics['test_duration']>=args.max_value:
+            print(f"Current test duration ({statistics['test_duration']})s exceeded maximum of {args.max_value}s")
         else:
             print(f"Current number of inputs ({statistics['number_of_types']}) reached")
         
