@@ -87,6 +87,7 @@ def main():
     # Initialize statistics
     statistics = {
         'inputs': [],
+        'type_average_duration' : None,
         'type_hit_average_duration': None,
         'type_miss_average_duration': None,
         'accuracy': 0.0
